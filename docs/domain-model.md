@@ -31,3 +31,15 @@ Examples:
 - stock
 - ETF
 - crypto
+
+### Financial values
+
+Financial values use `BigDecimal` instead of `double`
+to avoid floating-point precision errors.
+
+### Design decisions
+
+- Transaction is the single source of truth
+- Portfolio state is not stored
+- All financial values use BigDecimal
+- Entity relationships are unidirectional
