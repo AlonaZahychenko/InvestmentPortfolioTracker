@@ -1,35 +1,67 @@
 # Portfolio Calculation Rules
 
-## Cash calculation
-
-cash =
-
-+ DEPOSIT
-
-- BUY (quantity * price)
-
-+ SELL (quantity * price)
-
-- fee
+Portfolio state is **derived from transactions** and is not persisted in the database.
 
 ---
 
-## Transaction rules
+# Cash Calculation
 
-DEPOSIT
-amount != null
-asset == null
+Cash balance is calculated from all account transactions.
 
-BUY
-asset != null
-quantity != null
-price != null
+cash = DEPOSIT - BUY (quantity * price) + SELL (quantity * price) - fee
 
-SELL
-asset != null
-quantity != null
-price != null
+Explanation:
+
+- deposits increase cash
+- buy operations decrease cash
+- sell operations increase cash
+- transaction fees reduce cash
 
 ---
 
-## Notes
+# Position Quantity
+
+Position quantity for each asset is calculated as:
+position quantity = sum(BUY.quantity) - sum(SELL.quantity)
+
+---
+
+# Average Price
+
+The system uses **Weighted Average Cost**.
+
+average_price = total_cost / total_quantity
+
+Where:
+
+total_cost = Σ (BUY.quantity * BUY.price + BUY.fee)
+
+Sell transactions **do not change the average price**.
+
+---
+
+# Portfolio Value
+
+Portfolio value is calculated as:
+
+portfolio_value = cash + Σ(position_quantity * current_market_price)
+
+Market prices are expected to be provided by an external market data service.
+
+---
+
+# Notes
+
+Portfolio data such as:
+
+- positions
+- portfolio value
+- average price
+
+are **calculated dynamically** and are not stored in the database.
+
+This approach ensures that:
+
+- the transaction history remains the single source of truth
+- recalculations are always consistent
+- historical imports are supported
